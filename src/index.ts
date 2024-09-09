@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express';
 import { sequelize } from './config/config';
 import { User } from './models/user';
-import { Sorteo } from './models/sorteo';
+import userRoute from './routes/user';
+import sorteoRoute from './routes/sorteo';
 require('dotenv').config();
 
 const app = express();
@@ -25,42 +26,33 @@ const initSequalize = async () => {
     console.log('All models were synchronized successfully.');
 }
 
-// Ruta de ejemplo
-app.get('/', (req: Request, res: Response) => {
-    res.send('¡Hola, mundo!');
+const routes = [
+    {
+        path: '/user',
+        route: userRoute,
+    },
+    {
+        path: '/sorteo',
+        route: sorteoRoute,
+    },
+
+];
+
+routes.forEach((route) => {
+    app.use(route.path, route.route);
 });
 
-// CRUD para recursos (ejemplo: tareas)
-interface Tarea {
-    id: number;
-    nombre: string;
-}
 
-const tareas: Tarea[] = [];
-
-// get all users
-app.get('/user', async (req: Request, res: Response) => {
-    const users = await User.findAll();
-    res.status(200).json(users)
+// Iniciar el servidor
+app.listen(port, () => {
+    console.log(`Servidor corriendo en http://localhost:${port}`);
+    const sync = true
+    initSequalize()
 });
 
-// create a user
-app.post('/user', async (req: Request, res: Response) => {
-    const { name } = req.body;
-    if (!name || typeof name !== 'string') {
-        return res.status(400).json({ error: 'El nombre es requerido y debe ser una cadena de texto.' });
-    }
-    const user = await User.create({ name: name, id_sorteo: 2 });
-    // const jane = User.build({ name: 'Jane' }); lo mismo que esto
-    // await jane.save()
-
-    // console.log(user.toJSON());
-    // console.log(user.id);
-    res.status(201).json(user)
-});
 
 // TEST
-app.post('/function', async (req: Request, res: Response) => {
+app.post('/prueba', async (req: Request, res: Response) => {
     const { name } = req.body;
     if (!name || typeof name !== 'string') {
         return res.status(400).json({ error: 'El nombre es requerido y debe ser una cadena de texto.' });
@@ -68,27 +60,4 @@ app.post('/function', async (req: Request, res: Response) => {
     const user: any = await User.create({ name: name, id_sorteo: 1 })
         .then(() => res.status(201).json(user))
         .catch((e) => res.status(500).json(e))
-});
-
-// get all sorteos
-app.get('/sorteo', async (req: Request, res: Response) => {
-    const sorteos = await Sorteo.findAll();
-    res.status(200).json(sorteos)
-});
-
-// create a sorteo
-app.post('/sorteo', async (req: Request, res: Response) => {
-    const { name } = req.body;
-    if (!name || typeof name !== 'string') {
-        return res.status(400).json({ error: 'El nombre es requerido y debe ser una cadena de texto.' });
-    }
-    const user = await Sorteo.create({ name: name });
-    res.status(201).json(user)
-});
-
-// Iniciar el servidor
-app.listen(port, () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
-    const sync = true
-    initSequalize()
 });

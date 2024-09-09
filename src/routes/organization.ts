@@ -1,11 +1,11 @@
 
 import express, { Request, Response, Router } from 'express';
-import { Organization } from '../models/organization';
+import { Organization, Sorteo } from '../models';
 const router = express.Router()
 
 // get all sorteos
 router.get('/', async (req: Request, res: Response) => {
-    const sorteos = await Organization.findAll();
+    const sorteos = await Organization.findAll({ include: Sorteo });
     res.status(200).json(sorteos)
 });
 

@@ -3,6 +3,7 @@ import { sequelize } from './config/config';
 import { User } from './models/user';
 import userRoute from './routes/user';
 import sorteoRoute from './routes/sorteo';
+import sellerRoute from './routes/seller';
 import organizationRoute from './routes/organization';
 import { Organization, Sorteo } from './models';
 
@@ -10,6 +11,7 @@ require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 8080;
+const FORCE = false
 
 // Middleware para parsear JSON
 app.use(express.json());
@@ -25,22 +27,27 @@ const connectPostgre = async () => {
 
 const initSequalize = async () => {
     await connectPostgre()
-    await sequelize.sync({ alter: true, force: false });
+    await sequelize.sync({ alter: true, force: FORCE });
     console.log('All models were synchronized successfully.');
 }
 
 const routes = [
     {
-        path: '/user',
-        route: userRoute,
+        path: '/organization',
+        route: organizationRoute,
+    },
+    {
+        path: '/seller',
+        route: sellerRoute,
     },
     {
         path: '/sorteo',
         route: sorteoRoute,
     },
+
     {
-        path: '/organization',
-        route: organizationRoute,
+        path: '/user',
+        route: userRoute,
     },
 ];
 

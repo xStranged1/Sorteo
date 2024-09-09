@@ -7,17 +7,11 @@ export const User = sequelize.define('user', {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
-
   },
   name: {
     type: DataTypes.STRING,
   },
   phone: {
     type: DataTypes.INTEGER,
-  }
-
+  },
 })
-
-User.belongsTo(Sorteo, {
-  foreignKey: 'idSorteo'
-});

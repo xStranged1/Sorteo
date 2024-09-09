@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/config";
-import { Sorteo } from "./sorteo";
 
 export const Seller = sequelize.define('seller', {
   id: {
@@ -12,4 +11,3 @@ export const Seller = sequelize.define('seller', {
     type: DataTypes.STRING,
   }
 })
-Seller.belongsTo(Sorteo);

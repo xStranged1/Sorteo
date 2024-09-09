@@ -1,11 +1,11 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes } from "sequelize";
 import { sequelize } from "../config/config";
 import { Sorteo } from "./sorteo";
 
 export const Seller = sequelize.define('seller', {
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
   name: {

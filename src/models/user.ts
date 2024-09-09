@@ -4,16 +4,20 @@ import { Sorteo } from "./sorteo";
 
 export const User = sequelize.define('user', {
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
+
   },
   name: {
     type: DataTypes.STRING,
   },
+  phone: {
+    type: DataTypes.INTEGER,
+  }
 
 })
 
 User.belongsTo(Sorteo, {
-  foreignKey: 'id_sorteo'
+  foreignKey: 'idSorteo'
 });

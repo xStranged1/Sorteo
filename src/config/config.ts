@@ -1,4 +1,4 @@
-import { Sequelize } from "sequelize";
+import { Sequelize } from "sequelize-typescript";
 
 require('dotenv').config();
 const dialect = process.env.ADDON_DIALECT as 'mysql' | 'postgres' | 'sqlite' | 'mssql' || 'postgres';

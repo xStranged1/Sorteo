@@ -3,6 +3,9 @@ import { sequelize } from './config/config';
 import { User } from './models/user';
 import userRoute from './routes/user';
 import sorteoRoute from './routes/sorteo';
+import organizationRoute from './routes/organization';
+import { Organization, Sorteo } from './models';
+
 require('dotenv').config();
 
 const app = express();
@@ -22,7 +25,7 @@ const connectPostgre = async () => {
 
 const initSequalize = async () => {
     await connectPostgre()
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: true, force: false });
     console.log('All models were synchronized successfully.');
 }
 
@@ -35,7 +38,10 @@ const routes = [
         path: '/sorteo',
         route: sorteoRoute,
     },
-
+    {
+        path: '/organization',
+        route: organizationRoute,
+    },
 ];
 
 routes.forEach((route) => {
@@ -44,10 +50,18 @@ routes.forEach((route) => {
 
 
 // Iniciar el servidor
-app.listen(port, () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
-    const sync = true
-    initSequalize()
+app.listen(port, async () => {
+    try {
+        console.log(`Servidor corriendo en http://localhost:${port}`);
+        if (process.env.DONT_CONNECT) return
+
+        await initSequalize()
+        // const orgs = await Organization.findAll({ include: Sorteo });
+        // console.log(JSON.stringify(orgs, null, 2));
+    } catch (e) {
+        console.log(e);
+    }
+
 });
 
 

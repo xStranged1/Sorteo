@@ -1,20 +1,14 @@
-import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/config";
-
-const User = sequelize.define(
-  "user",
-  { name: DataTypes.STRING },
-  { timestamps: false }
-);
-// const User = sequelize.define('user', { id: {type: DataTypes.INTEGER ,autoIncrement: true} }, { name: DataTypes.STRING }, );
+import { DataTypes } from "sequelize";
 
 export const Sorteo = sequelize.define("sorteo", {
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
+  },
+  dateStart: {
+    type: DataTypes.DATEONLY,
   },
   name: DataTypes.STRING,
 });
-
-Sorteo.hasMany(User);

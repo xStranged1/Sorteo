@@ -15,21 +15,20 @@ router.post('/', async (req: Request, res: Response) => {
         if (!name || typeof name !== 'string') {
             return res.status(400).json({ error: 'El nombre es requerido y debe ser una cadena de texto.' });
         }
-        let sorteo
         if (sorteoId) {
-            sorteo = await Sorteo.findByPk(sorteoId);
+            const sorteo = await Sorteo.findByPk(sorteoId);
             if (!sorteo) return res.status(400).json({ error: 'sorteoId provided does not exist' })
+            const newSeller = await Seller.create({ name: name }) as any
+            (sorteo as any).addSeller(newSeller)
+            return res.status(201).json(newSeller)
         }
-        const newSeller = await Seller.create({ name: name }) as any
-        (sorteo as any).addSeller(newSeller)
 
-        Seller.create({ name: name, sorteoId: sorteoId })
+        Seller.create({ name: name })
             .then((seller) => { return res.status(201).json(seller) })
             .catch((e) => {
-                console.log("HUBO UN ERROR");
-                console.log(e);
-                return res.status(500).json({ error: 'invalid UUID Sorteo' })
+                return res.status(500).json({ error: 'Error de servidor' })
             })
+
     } catch (e) {
 
         return res.status(500)

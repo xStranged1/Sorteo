@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { sequelize } from './config/config';
 import { User } from './models/user';
+import { Sorteo } from './models/sorteo';
 require('dotenv').config();
 
 const app = express();
@@ -49,8 +50,7 @@ app.post('/user', async (req: Request, res: Response) => {
     if (!name || typeof name !== 'string') {
         return res.status(400).json({ error: 'El nombre es requerido y debe ser una cadena de texto.' });
     }
-
-    const user = await User.create({ name: name });
+    const user = await User.create({ name: name, id_sorteo: 2 });
     // const jane = User.build({ name: 'Jane' }); lo mismo que esto
     // await jane.save()
 
@@ -59,29 +59,31 @@ app.post('/user', async (req: Request, res: Response) => {
     res.status(201).json(user)
 });
 
-// Obtener una tarea por ID
-app.get('/tareas/:id', (req: Request, res: Response) => {
-    const tarea = tareas.find(t => t.id === parseInt(req.params.id));
-    if (!tarea) return res.status(404).send('Tarea no encontrada');
-    res.json(tarea);
+// TEST
+app.post('/function', async (req: Request, res: Response) => {
+    const { name } = req.body;
+    if (!name || typeof name !== 'string') {
+        return res.status(400).json({ error: 'El nombre es requerido y debe ser una cadena de texto.' });
+    }
+    const user: any = await User.create({ name: name, id_sorteo: 1 })
+        .then(() => res.status(201).json(user))
+        .catch((e) => res.status(500).json(e))
 });
 
-// Actualizar una tarea
-app.put('/tareas/:id', (req: Request, res: Response) => {
-    const tarea = tareas.find(t => t.id === parseInt(req.params.id));
-    if (!tarea) return res.status(404).send('Tarea no encontrada');
-
-    Object.assign(tarea, req.body);
-    res.json(tarea);
+// get all sorteos
+app.get('/sorteo', async (req: Request, res: Response) => {
+    const sorteos = await Sorteo.findAll();
+    res.status(200).json(sorteos)
 });
 
-// Eliminar una tarea
-app.delete('/tareas/:id', (req: Request, res: Response) => {
-    const index = tareas.findIndex(t => t.id === parseInt(req.params.id));
-    if (index === -1) return res.status(404).send('Tarea no encontrada');
-
-    tareas.splice(index, 1);
-    res.status(204).send();
+// create a sorteo
+app.post('/sorteo', async (req: Request, res: Response) => {
+    const { name } = req.body;
+    if (!name || typeof name !== 'string') {
+        return res.status(400).json({ error: 'El nombre es requerido y debe ser una cadena de texto.' });
+    }
+    const user = await Sorteo.create({ name: name });
+    res.status(201).json(user)
 });
 
 // Iniciar el servidor

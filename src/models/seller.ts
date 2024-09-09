@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/config";
 import { Sorteo } from "./sorteo";
 
-export const User = sequelize.define('user', {
+export const Seller = sequelize.define('seller', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -10,10 +10,6 @@ export const User = sequelize.define('user', {
   },
   name: {
     type: DataTypes.STRING,
-  },
-
+  }
 })
-
-User.belongsTo(Sorteo, {
-  foreignKey: 'id_sorteo'
-});
+Seller.belongsTo(Sorteo);

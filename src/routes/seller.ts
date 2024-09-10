@@ -38,14 +38,25 @@ router.post('/', async (req: Request, res: Response) => {
 
 });
 
-// delete a seller
-router.delete('/', async (req: Request, res: Response) => {
-    const { sellerId } = req.query
-    if (!sellerId) return res.status(400).json({ error: `The "sellerId" query parameter is required.` });
-    Seller.destroy({ where: { id: sellerId } })
+// update a Seller
+router.patch('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params
+    const { name } = req.body
+    if (typeof name != 'string') return res.status(400).json({ error: msgNameRequired })
+    Seller.update({ name: name }, { where: { id: id } })
         .then(() => { return res.status(200).json() })
-        .catch(() => { return res.status(500).json({ error: `The "sellerId" does not exist ` }) })
+        .catch(() => { return res.status(500).json({ error: msgServerError }) })
 });
+
+
+// delete a Seller
+router.delete('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params
+    Seller.destroy({ where: { id: id } })
+        .then(() => { return res.status(200).json() })
+        .catch(() => { return res.status(500).json({ error: msgServerError }) })
+});
+
 
 
 export default router;

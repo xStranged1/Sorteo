@@ -1,7 +1,7 @@
 
 import express, { Request, Response } from 'express';
 import { Organization, Sorteo } from '../models';
-import { msgNameRequired } from '../errors/errorMessage';
+import { msgNameRequired, msgServerError } from '../errors/errorMessage';
 const router = express.Router()
 
 
@@ -26,13 +26,25 @@ router.get('/', async (req: Request, res: Response) => {
     res.status(200).json(sorteos)
 });
 
-// delete a Organization
-router.delete('/', async (req: Request, res: Response) => {
-    const { organizationId } = req.query
-    if (!organizationId) return res.status(400).json({ error: `The "organizationId" query parameter is required.` });
-    Organization.destroy({ where: { id: organizationId } })
+// update a Organization
+router.patch('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params
+    const { name } = req.body
+    if (typeof name != 'string') return res.status(400).json({ error: msgNameRequired })
+    Organization.update({ name: name }, { where: { id: id } })
         .then(() => { return res.status(200).json() })
-        .catch(() => { return res.status(500).json({ error: `The "organizationId" does not exist ` }) })
+        .catch((error) => {
+            return res.status(500).json({ error: msgServerError })
+        })
+});
+
+
+// delete a Organization
+router.delete('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params
+    Organization.destroy({ where: { id: id } })
+        .then(() => { return res.status(200).json() })
+        .catch(() => { return res.status(500).json({ error: msgServerError }) })
 });
 
 

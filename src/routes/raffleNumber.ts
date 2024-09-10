@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { Sorteo, User } from '../models';
 import { RaffleNumber } from '../models/raffleNumber';
-import { msgSorteoIdRequired } from '../errors/errorMessage';
+import { msgNameRequired, msgServerError, msgSorteoIdRequired } from '../errors/errorMessage';
 
 const router = express.Router();
 
@@ -28,13 +28,23 @@ router.post('/', async (req: Request, res: Response) => {  // http://localhost:8
         .catch((e) => { console.log(e); return res.status(500).json({ error: 'some error' }) })
 });
 
-// delete a raffleNumber
-router.delete('/', async (req: Request, res: Response) => {
-    const { raffleNumberId } = req.query
-    if (!raffleNumberId) return res.status(400).json({ error: `The "raffleNumberId" query parameter is required.` });
-    RaffleNumber.destroy({ where: { id: raffleNumberId } })
+// update a RaffleNumber
+router.patch('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params
+    const { number } = req.body
+    if (typeof name != 'string') return res.status(400).json({ error: msgNameRequired })
+    RaffleNumber.update({ number: number }, { where: { id: id } })
         .then(() => { return res.status(200).json() })
-        .catch(() => { return res.status(500).json({ error: `The "raffleNumberId" does not exist ` }) })
+        .catch(() => { return res.status(500).json({ error: msgServerError }) })
+});
+
+
+// delete a RaffleNumber
+router.delete('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params
+    RaffleNumber.destroy({ where: { id: id } })
+        .then(() => { return res.status(200).json() })
+        .catch(() => { return res.status(500).json({ error: msgServerError }) })
 });
 
 

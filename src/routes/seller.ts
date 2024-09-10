@@ -1,5 +1,6 @@
-import express, { Request, Response, Router } from 'express';
+import express, { Request, Response } from 'express';
 import { Seller, Sorteo } from '../models';
+import { msgNameRequired, msgSorteoIdRequired } from '../errors/errorMessage';
 
 const router = express.Router();
 // get all seller
@@ -13,11 +14,11 @@ router.post('/', async (req: Request, res: Response) => {
     try {
         const { name, sorteoId } = req.body;
         if (!name || typeof name !== 'string') {
-            return res.status(400).json({ error: 'El nombre es requerido y debe ser una cadena de texto.' });
+            return res.status(400).json({ error: msgNameRequired });
         }
         if (sorteoId) {
             const sorteo = await Sorteo.findByPk(sorteoId);
-            if (!sorteo) return res.status(400).json({ error: 'sorteoId provided does not exist' })
+            if (!sorteo) return res.status(400).json({ error: msgSorteoIdRequired })
             const newSeller = await Seller.create({ name: name }) as any
             (sorteo as any).addSeller(newSeller)
             return res.status(201).json(newSeller)
@@ -26,7 +27,7 @@ router.post('/', async (req: Request, res: Response) => {
         Seller.create({ name: name })
             .then((seller) => { return res.status(201).json(seller) })
             .catch((e) => {
-                return res.status(500).json({ error: 'Error de servidor' })
+                return res.status(500).json({ error: 'Server error' })
             })
 
     } catch (e) {

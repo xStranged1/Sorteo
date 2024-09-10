@@ -5,13 +5,14 @@ import userRoute from './routes/user';
 import sorteoRoute from './routes/sorteo';
 import sellerRoute from './routes/seller';
 import organizationRoute from './routes/organization';
+import raffleNumberRoute from './routes/raffleNumber';
 import { Organization, Sorteo } from './models';
 
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 8080;
-const FORCE = false
+const FORCE: any = process.env.FORCE_SYNC || false
 
 // Middleware para parsear JSON
 app.use(express.json());
@@ -44,10 +45,13 @@ const routes = [
         path: '/sorteo',
         route: sorteoRoute,
     },
-
     {
         path: '/user',
         route: userRoute,
+    },
+    {
+        path: '/raffleNumber',
+        route: raffleNumberRoute,
     },
 ];
 
@@ -63,8 +67,11 @@ app.listen(port, async () => {
         if (process.env.DONT_CONNECT) return
 
         await initSequalize()
-        // const orgs = await Organization.findAll({ include: Sorteo });
-        // console.log(JSON.stringify(orgs, null, 2));
+
+        if (FORCE) {
+            const organization: any = await Organization.create({ name: 'Casa la costa' });
+            const sorteo = await Sorteo.create({ name: 'Sorteo de primavera', organizationId: organization.id, dateStart: '2024-09-30' })
+        }
     } catch (e) {
         console.log(e);
     }

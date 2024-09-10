@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/config";
-import { Sorteo } from "./sorteo";
 
 export const User = sequelize.define('user', {
   id: {
@@ -10,8 +9,9 @@ export const User = sequelize.define('user', {
   },
   name: {
     type: DataTypes.STRING,
+    allowNull: false
   },
   phone: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
   },
 })

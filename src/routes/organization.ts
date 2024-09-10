@@ -20,11 +20,22 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
 });
-// get all sorteos
+// get all Organizations
 router.get('/', async (req: Request, res: Response) => {
     const sorteos = await Organization.findAll({ include: Sorteo });
     res.status(200).json(sorteos)
 });
+
+// delete a Organization
+router.delete('/', async (req: Request, res: Response) => {
+    const { organizationId } = req.query
+    if (!organizationId) return res.status(400).json({ error: `The "organizationId" query parameter is required.` });
+    Organization.destroy({ where: { id: organizationId } })
+        .then(() => { return res.status(200).json() })
+        .catch(() => { return res.status(500).json({ error: `The "organizationId" does not exist ` }) })
+});
+
+
 
 
 export default router;

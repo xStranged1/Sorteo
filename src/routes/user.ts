@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { Seller, Sorteo, User } from '../models';
-import { msgNameRequired, msgSorteoIdRequired } from '../errors/errorMessage';
+import { msgNameRequired, msgServerError, msgSorteoIdRequired } from '../errors/errorMessage';
 
 const router = express.Router();
 // get all users
@@ -35,13 +35,23 @@ router.post('/', async (req: Request, res: Response) => {
             .then((user) => { return res.status(201).json(user) })
             .catch((e) => {
                 console.log(e);
-                return res.status(500).json({ error: 'Server error' })
+                return res.status(500).json({ error: msgServerError })
             })
 
     } catch (e) {
-        return res.status(500).json({ error: 'Server error' })
+        return res.status(500).json({ error: msgServerError })
     }
 });
+
+// delete a user
+router.delete('/', async (req: Request, res: Response) => {
+    const { userId } = req.query
+    if (!userId) return res.status(400).json({ error: `The "userId" query parameter is required.` });
+    User.destroy({ where: { id: userId } })
+        .then(() => { return res.status(200).json() })
+        .catch(() => { return res.status(500).json({ error: `The "userId" does not exist ` }) })
+});
+
 
 export default router;
 

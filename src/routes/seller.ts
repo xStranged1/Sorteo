@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { Seller, Sorteo } from '../models';
-import { msgNameRequired, msgSorteoIdRequired } from '../errors/errorMessage';
+import { msgNameRequired, msgServerError, msgSorteoIdRequired } from '../errors/errorMessage';
 
 const router = express.Router();
 // get all seller
@@ -27,7 +27,7 @@ router.post('/', async (req: Request, res: Response) => {
         Seller.create({ name: name })
             .then((seller) => { return res.status(201).json(seller) })
             .catch((e) => {
-                return res.status(500).json({ error: 'Server error' })
+                return res.status(500).json({ error: msgServerError })
             })
 
     } catch (e) {
@@ -37,6 +37,16 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
 });
+
+// delete a seller
+router.delete('/', async (req: Request, res: Response) => {
+    const { sellerId } = req.query
+    if (!sellerId) return res.status(400).json({ error: `The "sellerId" query parameter is required.` });
+    Seller.destroy({ where: { id: sellerId } })
+        .then(() => { return res.status(200).json() })
+        .catch(() => { return res.status(500).json({ error: `The "sellerId" does not exist ` }) })
+});
+
 
 export default router;
 

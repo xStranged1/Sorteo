@@ -13,7 +13,7 @@ router.get('/', async (req: Request, res: Response) => {
 
 
 router.get('/', async (req: Request, res: Response) => {
-    const { sorteoId } = req.params
+    const { sorteoId } = req.query
     const sorteos = await Sorteo.findAll();
     res.status(200).json(sorteos)
 });
@@ -40,4 +40,12 @@ router.post('/', async (req: Request, res: Response) => {
 
 });
 
+// delete a sorteo
+router.delete('/', async (req: Request, res: Response) => {
+    const { sorteoId } = req.query
+    if (!sorteoId) return res.status(400).json({ error: `The "sorteoId" query parameter is required.` });
+    Sorteo.destroy({ where: { id: sorteoId } })
+        .then(() => { return res.status(200).json() })
+        .catch(() => { return res.status(500).json({ error: `The "sorteoId" does not exist ` }) })
+});
 export default router;

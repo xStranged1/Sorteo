@@ -14,4 +14,12 @@ export const RaffleNumber = sequelize.define('raffleNumber', {
       min: 0,
     }
   }
-})
+},
+  {
+    // hooks: {
+    //   afterDestroy: {
+
+    //   }
+    // }
+  }
+)

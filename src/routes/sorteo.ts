@@ -21,21 +21,31 @@ router.get('/', async (req: Request, res: Response) => {
 // create a sorteo
 router.post('/', async (req: Request, res: Response) => {
     try {
-        const { name, dateStart, SorteoId } = req.body;
-        if (!name || typeof name !== 'string') {
-            return res.status(400).json({ error: msgNameRequired });
-        }
-        if (!SorteoId) return res.status(400).json({ error: 'The raffle must be associated with an Sorteo.' });
+        const { name, dateStart, organizationId, description, numberCount } = req.body;
+        if (!name || typeof name !== 'string') return res.status(400).json({ error: msgNameRequired });
+        if (!organizationId) return res.status(400).json({ error: 'The raffle must be associated with an organization.' });
+        if (!numberCount) return res.status(400).json({ error: `The "numberCount" is required` });
+        if (typeof numberCount != 'number') return res.status(400).json({ error: `The "numberCount" must be a number` });
         if (dateStart) {
             if (!isValidISO8601(dateStart)) return res.status(400).json({ error: msgDateFormatError });
         }
 
-        Sorteo.create({ name: name, dateStart: dateStart, SorteoId: SorteoId })
-            .then((sorteo) => { return res.status(201).json(sorteo) })
-            .catch((e) => { return res.status(500).json({ error: 'invalid UUID Sorteo' }) })
+        Sorteo.create({
+            name: name,
+            numberCount: numberCount,
+            description: description,
+            dateStart: dateStart,
+            organizationId: organizationId,
+        })
+            .then((sorteo) => {
+                return res.status(201).json(sorteo);
+            })
+            .catch(() => {
+                return res.status(500).json({ error: msgServerError });
+            });
 
     } catch (e) {
-        return res.status(500)
+        return res.status(500).json(msgServerError)
     }
 
 });
@@ -44,16 +54,35 @@ router.post('/', async (req: Request, res: Response) => {
 // update a Sorteo
 router.patch('/:id', async (req: Request, res: Response) => {
     const { id } = req.params
-    const { name, dateStart } = req.body
+    const { name, dateStart, numberCount, description, organizationId } = req.body
     if (name) {
         if (typeof name != 'string') return res.status(400).json({ error: msgNameRequired })
     }
     if (dateStart) {
         if (!isValidISO8601(dateStart)) return res.status(400).json({ error: msgDateFormatError });
     }
-    Sorteo.update({ name: name, dateStart: dateStart }, { where: { id: id } })
-        .then(() => { return res.status(200).json() })
-        .catch(() => { return res.status(500).json({ error: msgServerError }) })
+    if (numberCount) {
+        if (typeof numberCount != 'number') return res.status(400).json({ error: `The "numberCount" must be a number` });
+    }
+    if (description) {
+        if (typeof description != 'string') return res.status(400).json({ error: `The description must be a string` })
+    }
+    Sorteo.update(
+        {
+            name: name,
+            description: description,
+            dateStart: dateStart,
+            organizationId: organizationId,
+            numberCount: numberCount,
+        },
+        { where: { id: id } }
+    )
+        .then((sorteo) => {
+            return res.status(200).json(sorteo);
+        })
+        .catch(() => {
+            return res.status(500).json({ error: msgServerError });
+        });
 });
 
 

@@ -70,7 +70,7 @@ app.listen(port, async () => {
 
         if (FORCE) {
             const organization: any = await Organization.create({ name: 'Casa la costa' });
-            const sorteo = await Sorteo.create({ name: 'Sorteo de primavera', organizationId: organization.id, dateStart: '2024-09-30' })
+            const sorteo = await Sorteo.create({ name: 'Sorteo de primavera', organizationId: organization.id, dateStart: '2024-09-30', numberCount: 500 })
         }
     } catch (e) {
         console.log(e);

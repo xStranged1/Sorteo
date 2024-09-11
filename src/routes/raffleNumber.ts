@@ -29,10 +29,10 @@ router.post('/', async (req: Request, res: Response) => {  // http://localhost:8
         //this dont valide user and seller with the same sorteo yet
         .then((number) => {
             Sorteo.update(
-                { numberCount: Sequelize.literal('"numberCount" - 1') },
+                { availableNumbers: Sequelize.literal('"availableNumbers" - 1') },
                 { where: { id: sorteoId } }
             ).then(() => { console.log('nice') })
-                .catch((e) => { console.log('Error updating numberCount'); })
+                .catch((e) => { console.log('Error updating availableNumbers'); })
 
             return res.status(201).json(number)
         })
@@ -52,12 +52,17 @@ router.patch('/:id', async (req: Request, res: Response) => {
 // delete a RaffleNumber
 router.delete('/:id', async (req: Request, res: Response) => {
     const { id } = req.params
-    RaffleNumber.destroy({ where: { id: id } })
-        .then(() => {
-            // dont decrement availableNumbers yet
-            return res.status(200).json()
-        })
-        .catch(() => { return res.status(500).json({ error: msgServerError }) })
+    const numberR: any = await RaffleNumber.findAll({
+        include: Sorteo,
+        where: {
+            id: id
+        }
+    })
+    const number = numberR[0]
+    const sorteo = number.sorteo
+    sorteo.update({ availableNumbers: sorteo.availableNumbers + 1 })
+    await number.destroy()
+    return res.status(200).json('Number removed successfully')
 });
 
 

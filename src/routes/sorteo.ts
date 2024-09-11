@@ -77,8 +77,8 @@ router.patch('/:id', async (req: Request, res: Response) => {
         },
         { where: { id: id } }
     )
-        .then((sorteo) => {
-            return res.status(200).json(sorteo);
+        .then(() => {
+            return res.status(200).json();
         })
         .catch(() => {
             return res.status(500).json({ error: msgServerError });

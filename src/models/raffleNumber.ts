@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/config";
+import { Sorteo } from "./sorteo";
 
 export const RaffleNumber = sequelize.define('raffleNumber', {
   id: {
@@ -15,11 +16,4 @@ export const RaffleNumber = sequelize.define('raffleNumber', {
     }
   }
 },
-  {
-    // hooks: {
-    //   afterDestroy: {
-
-    //   }
-    // }
-  }
 )

@@ -7,10 +7,12 @@ import sellerRoute from './routes/seller';
 import organizationRoute from './routes/organization';
 import raffleNumberRoute from './routes/raffleNumber';
 import { Organization, Sorteo } from './models';
+import cors from 'cors';
 
 require('dotenv').config();
 
 const app = express();
+app.use(cors)
 const port = process.env.PORT || 8080;
 const FORCE: any = process.env.FORCE_SYNC || false
 

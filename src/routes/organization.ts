@@ -1,7 +1,7 @@
 
 import express, { Request, Response } from 'express';
 import { Organization, Sorteo } from '../models';
-import { msgNameRequired, msgServerError } from '../errors/errorMessage';
+import { msgDescriptionLength, msgDescriptionString, msgNameRequired, msgServerError } from '../errors/errorMessage';
 const router = express.Router()
 
 
@@ -9,29 +9,32 @@ const router = express.Router()
 router.post('/', async (req: Request, res: Response) => {
 
     try {
-        const { name } = req.body;
-        if (!name || typeof name !== 'string') {
-            return res.status(400).json({ error: msgNameRequired });
+        const { name, description } = req.body;
+        if (!name || typeof name !== 'string') return res.status(400).json({ error: msgNameRequired });
+        if (description) {
+            if (typeof description !== 'string') return res.status(400).json({ error: msgDescriptionString });
+            if (description.length > 1500) return res.status(400).json({ error: msgDescriptionLength });
         }
-        const organization = await Organization.create({ name: name });
+
+        const organization = await Organization.create({ name: name, description: description });
         res.status(201).json(organization)
     } catch (e) {
-        res.status(500)
+        res.status(500).json({ error: msgServerError })
     }
 
 });
 // get all Organizations
 router.get('/', async (req: Request, res: Response) => {
-    const sorteos = await Organization.findAll({ include: Sorteo });
-    res.status(200).json(sorteos)
+    const organization = await Organization.findAll({ include: Sorteo });
+    res.status(200).json(organization)
 });
 
 // update a Organization
 router.patch('/:id', async (req: Request, res: Response) => {
     const { id } = req.params
-    const { name } = req.body
+    const { name, description } = req.body
     if (typeof name != 'string') return res.status(400).json({ error: msgNameRequired })
-    Organization.update({ name: name }, { where: { id: id } })
+    Organization.update({ name: name, description: description }, { where: { id: id } })
         .then(() => { return res.status(200).json() })
         .catch((error) => {
             return res.status(500).json({ error: msgServerError })

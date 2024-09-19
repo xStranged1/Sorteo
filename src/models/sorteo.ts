@@ -26,6 +26,9 @@ export const Sorteo = sequelize.define("sorteo", {
   },
   description: {
     type: DataTypes.TEXT,
+    validate: {
+      max: 1500
+    }
   }
 },
   {

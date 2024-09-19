@@ -2,7 +2,7 @@
 import express, { Request, Response } from 'express';
 import { isValidISO8601 } from '../utils/utils';
 import { Sorteo } from '../models';
-import { msgDateFormatError, msgNameRequired, msgServerError } from '../errors/errorMessage';
+import { msgDateFormatError, msgDescriptionLength, msgDescriptionString, msgNameRequired, msgServerError } from '../errors/errorMessage';
 const router = express.Router()
 
 // get all sorteos
@@ -65,7 +65,8 @@ router.patch('/:id', async (req: Request, res: Response) => {
         if (typeof numberCount != 'number') return res.status(400).json({ error: `The "numberCount" must be a number` });
     }
     if (description) {
-        if (typeof description != 'string') return res.status(400).json({ error: `The description must be a string` })
+        if (typeof description !== 'string') return res.status(400).json({ error: msgDescriptionString });
+        if (description.length > 1500) return res.status(400).json({ error: msgDescriptionLength });
     }
     Sorteo.update(
         {

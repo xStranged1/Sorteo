@@ -10,5 +10,11 @@ export const Organization = sequelize.define('organization', {
     name: {
         type: DataTypes.STRING,
         unique: true
+    },
+    description: {
+        type: DataTypes.TEXT,
+        validate: {
+            max: 1500,
+        }
     }
 })

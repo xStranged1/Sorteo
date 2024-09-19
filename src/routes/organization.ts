@@ -16,10 +16,16 @@ router.post('/', async (req: Request, res: Response) => {
             if (description.length > 1500) return res.status(400).json({ error: msgDescriptionLength });
         }
 
-        const organization = await Organization.create({ name: name, description: description });
-        res.status(201).json(organization)
+        Organization.create({ name: name, description: description })
+            .then((organization) => {
+                return res.status(201).json(organization)
+            })
+            .catch((err) => {
+                if (err.name == 'SequelizeUniqueConstraintError') return res.status(400).json({ error: `name: '${name}' already exists` })
+                return res.status(500).json({ error: msgServerError })
+            })
     } catch (e) {
-        res.status(500).json({ error: msgServerError })
+        return res.status(500).json({ error: msgServerError })
     }
 
 });

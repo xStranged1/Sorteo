@@ -1,7 +1,9 @@
 
 import express, { Request, Response } from 'express';
 import { Organization, Sorteo } from '../models';
-import { msgDescriptionLength, msgDescriptionString, msgNameRequired, msgServerError } from '../errors/errorMessage';
+import { msgDescriptionLength, msgDescriptionString, msgNameRequired, msgServerError, msgUUIDInvalid } from '../errors/errorMessage';
+import { v4 as uuidv4, validate as validateUUID } from 'uuid';
+
 const router = express.Router()
 
 
@@ -34,6 +36,15 @@ router.get('/', async (req: Request, res: Response) => {
     const organization = await Organization.findAll({ include: Sorteo });
     res.status(200).json(organization)
 });
+
+// get a organization by id
+router.get('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params
+    if (!validateUUID(id)) return res.status(400).json({ error: msgUUIDInvalid })
+    const organization = await Organization.findAll({ include: Sorteo, where: { id: id } });
+    res.status(200).json(organization)
+});
+
 
 // update a Organization
 router.patch('/:id', async (req: Request, res: Response) => {

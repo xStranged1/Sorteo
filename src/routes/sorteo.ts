@@ -1,8 +1,11 @@
 
 import express, { Request, Response } from 'express';
 import { isValidISO8601 } from '../utils/utils';
-import { Sorteo } from '../models';
-import { msgDateFormatError, msgDescriptionLength, msgDescriptionString, msgNameRequired, msgServerError } from '../errors/errorMessage';
+import { Seller, Sorteo, User } from '../models';
+import { msgDateFormatError, msgDescriptionLength, msgDescriptionString, msgNameRequired, msgServerError, msgUUIDInvalid } from '../errors/errorMessage';
+import { validate as validateUUID } from 'uuid';
+import { RaffleNumber } from '../models/raffleNumber';
+
 const router = express.Router()
 
 // get all sorteos
@@ -14,9 +17,17 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.get('/', async (req: Request, res: Response) => {
     const { sorteoId } = req.query
-    const sorteos = await Sorteo.findAll();
+    const sorteos = await Sorteo.findAll({});
     res.status(200).json(sorteos)
 });
+
+router.get('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params
+    if (!validateUUID(id)) return res.status(400).json({ error: msgUUIDInvalid })
+    const sorteo = await Sorteo.findAll({ include: [RaffleNumber, Seller, User], where: { id: id } });
+    res.status(200).json(sorteo)
+});
+
 
 // create a sorteo
 router.post('/', async (req: Request, res: Response) => {

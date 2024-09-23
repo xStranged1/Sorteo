@@ -2,7 +2,7 @@
 import express, { Request, Response } from 'express';
 import { Organization, Sorteo } from '../models';
 import { msgDescriptionLength, msgDescriptionString, msgNameRequired, msgServerError, msgUUIDInvalid } from '../errors/errorMessage';
-import { v4 as uuidv4, validate as validateUUID } from 'uuid';
+import { validate as validateUUID } from 'uuid';
 
 const router = express.Router()
 

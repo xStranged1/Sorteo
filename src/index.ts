@@ -8,6 +8,7 @@ import organizationRoute from './routes/organization';
 import raffleNumberRoute from './routes/raffleNumber';
 import { Organization, Sorteo } from './models';
 import cors from 'cors';
+import { checkConstraints, dropNumberUniqueConstraint } from './utils/utils';
 
 require('dotenv').config();
 
@@ -28,10 +29,14 @@ const connectPostgre = async () => {
     }
 }
 
+
 const initSequalize = async () => {
     await connectPostgre()
-    await sequelize.sync({ alter: true, force: FORCE });
+    await sequelize.sync();
     console.log('All models were synchronized successfully.');
+
+    // checkConstraints()
+    // dropNumberUniqueConstraint()
 }
 
 const routes = [

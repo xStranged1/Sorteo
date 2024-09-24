@@ -5,5 +5,6 @@ export const msgDescriptionLength = `The "description" lenght must be less than 
 export const msgServerError = `Server Internal Error`
 export const msgDateFormatError = `Incorrect date format, should be: 'YYYY-MM-DD'`
 export const msgUUIDInvalid = `The UUID is invalid'`
+export const msgNumberAlreadySelled = `The number is already selled in that raffle.`
 
 

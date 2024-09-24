@@ -1,14 +1,13 @@
 import express, { Request, Response } from 'express';
 import { Sorteo, User } from '../models';
 import { RaffleNumber } from '../models/raffleNumber';
-import { msgNameRequired, msgServerError, msgSorteoIdRequired } from '../errors/errorMessage';
+import { msgNameRequired, msgNumberAlreadySelled, msgServerError, msgSorteoIdRequired } from '../errors/errorMessage';
 import { Sequelize } from 'sequelize';
 
 const router = express.Router();
 
 // get all numbers
 router.get('/', async (req: Request, res: Response) => {
-    const { name, sorteoId, raffleNumberId, userId } = req.query;
     const numbers = await RaffleNumber.findAll({ include: Sorteo });
     res.status(200).json(numbers)
 });
@@ -25,18 +24,22 @@ router.post('/', async (req: Request, res: Response) => {  // http://localhost:8
     if (typeof numberParsed != 'number') return res.status(400).json({ error: 'The `number` must be a valid number' });
 
     RaffleNumber.create({ number: numberParsed, sorteoId: sorteoId, userId: userId, sellerId: sellerId })
-
         //this dont valide user and seller with the same sorteo yet
         .then((number) => {
             Sorteo.update(
                 { availableNumbers: Sequelize.literal('"availableNumbers" - 1') },
                 { where: { id: sorteoId } }
-            ).then(() => { console.log('nice') })
-                .catch((e) => { console.log('Error updating availableNumbers'); })
+            )
+                .catch((e) => { return res.status(500).json({ error: msgServerError }) })
 
             return res.status(201).json(number)
         })
-        .catch((e) => { console.log(e); return res.status(500).json({ error: msgServerError }) })
+        .catch((e: Error) => {
+            if (e.message == msgNumberAlreadySelled) {
+                return res.status(400).json({ error: msgNumberAlreadySelled })
+            }
+            return res.status(500).json({ error: msgServerError })
+        })
 });
 
 // update a RaffleNumber

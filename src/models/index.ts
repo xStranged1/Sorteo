@@ -23,7 +23,13 @@ Sorteo.belongsToMany(Seller, { through: 'SorteoSeller' });
 Seller.belongsToMany(Sorteo, { through: 'SorteoSeller' });
 
 RaffleNumber.belongsTo(Sorteo, { foreignKey: { allowNull: false } })
-Sorteo.hasOne(RaffleNumber)
+Sorteo.hasMany(RaffleNumber,
+    {
+        foreignKey: {
+            name: 'sorteoId',
+            allowNull: false
+        }
+    });
 
 RaffleNumber.belongsTo(User, { foreignKey: { allowNull: false } })
 User.hasOne(RaffleNumber, { foreignKey: { allowNull: false } })

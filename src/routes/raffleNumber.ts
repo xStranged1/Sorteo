@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { Sorteo, User } from '../models';
 import { RaffleNumber } from '../models/raffleNumber';
-import { msgNameRequired, msgNumberAlreadySelled, msgServerError, msgSorteoIdRequired } from '../errors/errorMessage';
+import { msgNameRequired, msgNumberAlreadySelled, msgNumberHigher, msgServerError, msgSorteoIdRequired } from '../errors/errorMessage';
 import { Sequelize } from 'sequelize';
 
 const router = express.Router();
@@ -37,6 +37,9 @@ router.post('/', async (req: Request, res: Response) => {  // http://localhost:8
         .catch((e: Error) => {
             if (e.message == msgNumberAlreadySelled) {
                 return res.status(400).json({ error: msgNumberAlreadySelled })
+            }
+            if (e.message == msgNumberHigher) {
+                return res.status(400).json({ error: msgNumberHigher })
             }
             return res.status(500).json({ error: msgServerError })
         })

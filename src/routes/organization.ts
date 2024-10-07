@@ -3,12 +3,18 @@ import express, { Request, Response } from 'express';
 import { Organization, Sorteo } from '../models';
 import { msgDescriptionLength, msgDescriptionString, msgNameRequired, msgServerError, msgUUIDInvalid } from '../errors/errorMessage';
 import { validate as validateUUID } from 'uuid';
+import { auth } from 'express-oauth2-jwt-bearer';
 
 const router = express.Router()
 
 
 // create a organization
-router.post('/', async (req: Request, res: Response) => {
+
+const checkJwt = auth({
+    audience: 'Sorteo API',
+    issuerBaseURL: `https://dev-2tin2iqi20yowm4b.us.auth0.com/`,
+});
+router.post('/', checkJwt, async (req: Request, res: Response) => {
 
     try {
         const { name, description } = req.body;
@@ -32,7 +38,7 @@ router.post('/', async (req: Request, res: Response) => {
 
 });
 // get all Organizations
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', checkJwt, async (req: Request, res: Response) => {
     const organization = await Organization.findAll({ include: Sorteo });
     res.status(200).json(organization)
 });

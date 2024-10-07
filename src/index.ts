@@ -19,7 +19,6 @@ const FORCE: any = process.env.FORCE_SYNC || false
 
 // Middleware para parsear JSON
 app.use(express.json());
-
 const connectPostgre = async () => {
     try {
         await sequelize.authenticate();
